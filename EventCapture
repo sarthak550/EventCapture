@@ -1,0 +1,19 @@
+vidObj = VideoReader('AVI16.mp4');
+upthresh = 0.05;
+downthresh = -0.05;
+deltaVideo = VideoWriter('deltaVideo6_thresh.avi');
+NumFrames = vidObj.NumFrames;
+open(deltaVideo)
+for i = 2:NumFrames-1
+    img = im2double(rgb2gray(read(vidObj,i)));
+    pimg = im2double(rgb2gray(read(vidObj,i-1)));
+    delta = img - pimg;
+    newdelta = delta;
+    newdelta(delta >= upthresh) = 1.0;
+    newdelta(delta < upthresh) = 0.5;
+    newdelta(delta <= downthresh) = 0.0;
+    writeVideo(deltaVideo,repmat(newdelta, [1,1,3]));
+    imshow(newdelta)
+    pause(1/vidObj.FrameRate);
+end
+close(deltaVideo)
